@@ -12,7 +12,7 @@ else
 	md_file="notes"
 fi
 
-if [ ! -s "$md_file" ]; then
+if [ ! -s "${md_file}.md" ]; then
 	echo "${md_file}.md not found"
 	exit 1
 fi
