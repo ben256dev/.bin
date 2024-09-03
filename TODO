@@ -1,2 +1,4 @@
 fix gt and buc to allow for certain directories to be ignored
 delete .nvm TODO file
+also check wsrc directory even though its not in the home directory
+add a way to allow for certain directories to be included

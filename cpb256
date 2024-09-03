@@ -1,0 +1,12 @@
+#!/bin/bash
+
+FILE=$1
+
+# check file exists
+if [ ! -f "$FILE" ]; then
+	echo "file ${FILE} not found."
+	exit 1
+fi
+
+# copy file over to website public src
+cp "$FILE" "/var/www/ben256/public/${FILE}"
