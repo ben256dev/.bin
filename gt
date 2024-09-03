@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# the script uses the current directory as a base for the command
+BASE_DIR=$(pwd)
+COMBINED_TODO_FILE=$(mktemp)
+GT_NOTES_FILE=$(mktemp)
+
+git_repo_found=false
+todos_found=false
+
+# find all git repositories
+for dir in "$BASE_DIR"/*/; do
+	if [ -d "$dir/.git" ]; then
+		if [ "$git_repo_found" = false ]; then
+			git_repo_found=true
+			echo "# TODO items" >> "$COMBINED_TODO_FILE"
+			echo "" >> "$COMBINED_TODO_FILE"
+		fi
+
+		repo_name=$(basename "$dir")
+		TODO_FILE=$(find "$dir" -type f -name 'TODO' -print -quit)
+
+		if [ -z "$TODO_FILE" ]; then
+			if [ ! -e "$dir/TODO" ]; then
+				echo "## CREATED MISSING $repo_name TODO FILE" >> "$GT_NOTES_FILE"
+				touch "$dir/TODO"
+			fi
+		else
+			if [ -s "$TODO_FILE" ]; then
+				echo "## $repo_name:" >> "$COMBINED_TODO_FILE"
+				sed 's/^/- /' "$TODO_FILE" >> "$COMBINED_TODO_FILE"
+				echo "" >> "$COMBINED_TODO_FILE"
+				todos_found=true
+			fi
+		fi
+	fi
+done
+
+# combine notes and combined file by putting notes at the end
+cat "$GT_NOTES_FILE" >> "$COMBINED_TODO_FILE"
+rm "$GT_NOTES_FILE"
+
+# if there are todos, we print the combined file using toobig utility
+if [ "$todos_found" = true ]; then
+	if [ -s "$COMBINED_TODO_FILE" ]; then
+		toobig "$COMBINED_TODO_FILE"
+	fi
+else
+	echo "## TODOS FINISHED"
+fi
+
+rm "$COMBINED_TODO_FILE"

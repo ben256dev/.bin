@@ -1,0 +1,6 @@
+# gc
+gc_url_type=ssh
+gc_github_user=ben256dev
+
+# toobig pager
+toobig_pager=less

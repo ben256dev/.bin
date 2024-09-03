@@ -1,0 +1,56 @@
+#!/bin/bash
+
+CONFIG_FILE="$HOME/.bin/.ben-util-config"
+
+usage()
+{
+	echo "usage: buc [-g] [-s key1=value,key2=value2,... | key ...]"
+	echo "  -h              Print this usage message."
+	echo "  -g              Get the path to the config file."
+	echo "  -s key1=value,key2=value2,..."
+	echo "                  Set or update key-value pairs in the config file."
+	echo "  key ...         Query for specified keys in the config file."
+}
+
+while getopts "ghs:" opt; do
+	case $opt in
+		# get path to config file
+		g)
+			echo "$CONFIG_FILE"
+			;;
+		# usage help
+		h)
+			usage
+			exit 0
+			;;
+		# set key-value pairs
+		s)
+			IFS=',' read -r -a pairs <<< "$OPTARG"
+			for pair in "${pairs[@]}"; do
+				IFS='=' read -r key value <<< "$pair"
+    				if grep -q "^$key=" "$CONFIG_FILE"; then
+    				    sed -i "s|^$key=.*|$key=$value|" "$CONFIG_FILE"
+    				else
+    				    echo "$key=$value" >> "$CONFIG_FILE"
+    				fi
+			done
+			exit 0
+			;;
+		*)
+			usage
+			exit 1
+			;;
+	esac
+done
+shift $((OPTIND -1))
+
+# when nothing is specified it just cats the whole config
+if [ "$#" -eq 0 ]; then
+	toobig "$CONFIG_FILE"
+	exit 0
+fi
+
+# query for specified key inside of config
+for key in "$@"; do
+	grep "^$key=" "$CONFIG_FILE" | cut -d= -f2
+done

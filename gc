@@ -1,0 +1,59 @@
+#!/bin/bash
+
+CONFIG_FILE=$(buc -g)
+url_type=$(buc gc_url_type)
+github_user=$(buc gc_github_user)
+
+# query url type and user from config
+if [ -z "$url_type" ] || [ -z "$github_user" ]; then
+	echo "gc_url_type and gc_github_user must be set in $CONFIG_FILE."
+	exit 1
+fi
+
+echo_usage() {
+    echo "usage: gc [-h] <repository-name>"
+    echo "  -h              Display this help message."
+    echo "                  Use 'buc' to alter gc config: 'buc -s gc_url_type=<ssh/https>,gc_github_user=<github-username>"
+}
+
+# parse command-line options
+while getopts "h" opt; do
+	case $opt in
+		h)
+			echo_usage
+			exit 0
+			;;
+		/?)
+			echo "invalid option: -$OPTARG" >&2
+			echo_usage
+			exit 1
+			;;
+		:)
+			echo "option -$OPTARG requires an argument." >&2
+			exit 1
+			;;
+	esac
+done
+shift $((OPTIND -1))
+
+# ensure at least a repo name was provided
+if [ -z "$1" ]; then
+	echo_usage
+	exit 1
+fi
+
+# repository "name" is passed as an argument
+REPO_NAME=$1
+
+# construct github url
+if [ "$url_type" = "ssh" ]; then
+	GIT_URL="git@github.com:${github_user}/${REPO_NAME}.git"
+elif [ "$url_type" = "https" ]; then
+	GIT_URL="https://github.com/${github_user}/${REPO_NAME}.git"
+else
+	echo "unsupported url_type '$url_type'. use 'ssh' or 'https'."
+	exit 1
+fi
+
+# finally, clone the repo
+git clone "$GIT_URL"
