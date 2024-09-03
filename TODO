@@ -1,0 +1,2 @@
+fix gt and buc to allow for certain directories to be ignored
+delete .nvm TODO file

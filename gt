@@ -9,7 +9,7 @@ git_repo_found=false
 todos_found=false
 
 # find all git repositories
-for dir in "$BASE_DIR"/*/; do
+for dir in $(find "$BASE_DIR" -type d -name .git -prune -exec dirname {} \;); do
 	if [ -d "$dir/.git" ]; then
 		if [ "$git_repo_found" = false ]; then
 			git_repo_found=true
