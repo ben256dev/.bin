@@ -11,17 +11,22 @@ if [ -z "$url_type" ] || [ -z "$github_user" ]; then
 fi
 
 echo_usage() {
-    echo "usage: gc [-h] <repository-name>"
+    echo "usage: gc [-h] [-f] <repository-name>"
     echo "  -h              Display this help message."
+    echo "  -f              Get formatted url instead of cloning."
     echo "                  Use 'buc' to alter gc config: 'buc -s gc_url_type=<ssh/https>,gc_github_user=<github-username>"
 }
 
 # parse command-line options
-while getopts "h" opt; do
+format_url_only=false
+while getopts "hf" opt; do
 	case $opt in
 		h)
 			echo_usage
 			exit 0
+			;;
+		f)
+			format_url_only=true
 			;;
 		/?)
 			echo "invalid option: -$OPTARG" >&2
@@ -56,4 +61,8 @@ else
 fi
 
 # finally, clone the repo
-git clone "$GIT_URL"
+if [ "$format_url_only" = true ]; then
+	echo "$GIT_URL"
+else
+	git clone "$GIT_URL"
+fi
