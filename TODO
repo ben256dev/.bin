@@ -2,3 +2,7 @@ write script to open github repo in browser using with browser command in buc
 possibly write a separate command for github link formatting and get rid of gc by making gc and gt the same command
 fix gt and buc to allow for certain directories to be ignored
 delete .nvm TODO file
+list available github repos using github api and show which are cloned already
+list of repositories to search and manage with gt, instead of searching everything recursively which is slow, add to list with every gc
+gt sort repos by user
+gc'd repos can contain a init.gc file to run a bash script that intializes everything in the project (and then deletes itself)
