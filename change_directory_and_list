@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ "$#" -eq 1 ]; then
+	cd $1
+fi
+	clear
+	ls
+if [ "$#" -ne 1 ]; then
+	echo "cdl: invalid number of arguments"
+fi
