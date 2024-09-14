@@ -6,3 +6,5 @@ list available github repos using github api and show which are cloned already
 list of repositories to search and manage with gt, instead of searching everything recursively which is slow, add to list with every gc
 gt sort repos by user
 gc'd repos can contain a init.gc file to run a bash script that intializes everything in the project (and then deletes itself)
+gt option to edit todos with buc_editor field and add modified todos with git commit automatically
+instead of removing options, mark them complete somehow and reflect his in the automatic markdown styling, then after committed, the completed items can dissapear
