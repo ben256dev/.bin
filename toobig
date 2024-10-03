@@ -1,34 +1,35 @@
 #!/bin/bash
 
-# query pager from the config file
+# Query pager from the config file
 pager=$(buc "toobig_pager")
 
 if [ -z "$pager" ]; then
-	echo "toobig_pager must be set in $CONFIG_FILE."
-	exit 1
+    echo "toobig_pager must be set in $CONFIG_FILE."
+    exit 1
 fi
 
-# ensure file argument is provided
-if [ $# -ne 1 ]; then
-	echo "usage: $0 <file>"
-	exit 1
+# If no file is provided, read from stdin
+if [ $# -eq 0 ]; then
+    input_source="/dev/stdin"
+else
+    FILE="$1"
+    # Ensure the file exists if provided
+    if [ ! -f "$FILE" ]; then
+        echo "file not found: $FILE"
+        exit 1
+    fi
+    input_source="$FILE"
 fi
 
-FILE="$1"
-
-# ensure file exists
-if [ ! -f "$FILE" ]; then
-	echo "file not found: $FILE"
-	exit 1
-fi
-
-# cat the file someway
-FILE="$1"
+# Get terminal height
 terminal_height=$(tput lines)
-file_lines=$(wc -l < "$FILE")
 
-cat "$FILE"
+# Count the number of lines in the input
+file_lines=$(cat "$input_source" | tee /dev/tty | wc -l)
 
+# Use pager if the input exceeds the terminal height
 if [ "$file_lines" -ge "$terminal_height" ]; then
-	cat "$FILE" | less
+    cat "$input_source" | less
+else
+    cat "$input_source"
 fi
